@@ -1,0 +1,835 @@
+{
+  "alignment": {
+    "min_validation_cosine": 0.1,
+    "ridge_regularization": 1.0
+  },
+  "audit_datasets": [
+    "Movies",
+    "Toys",
+    "Grocery",
+    "Reddit-S",
+    "ele-fashion",
+    "books-nc"
+  ],
+  "compatibility": {
+    "max_sources": 250000,
+    "nonedges_per_source": 32,
+    "seed": 4103
+  },
+  "dataset_configs": {
+    "Grocery": {
+      "dataset": {
+        "add_self_loops": false,
+        "auto_generate_splits": true,
+        "feature_dtype": "float32",
+        "graph_path": "/hdd1/DataInHere/YHF/data/Grocery/GroceryGraph.pt",
+        "image_feat_path": "/hdd1/DataInHere/YHF/data/Grocery/ImageFeature/Grocery_openai_clip-vit-large-patch14.npy",
+        "lp_num_neg": 150,
+        "lp_split_path": "/hdd1/DataInHere/YHF/data/MAGB_split/Grocery_lp_seed42_val0.2_test0.2_neg150_filtered1.pt",
+        "lp_split_undirected": true,
+        "lp_test_ratio": 0.2,
+        "lp_val_ratio": 0.2,
+        "make_undirected": true,
+        "name": "Grocery",
+        "nc_split_path": "/hdd1/DataInHere/YHF/data/MAGB_split/Grocery_nc_seed42_train0.6_val0.2.pt",
+        "nc_train_ratio": 0.6,
+        "nc_val_ratio": 0.2,
+        "num_classes": 20,
+        "source": "magb",
+        "tasks": [
+          "nc",
+          "lp"
+        ],
+        "text_feat_path": "/hdd1/DataInHere/YHF/data/Grocery/TextFeature/Grocery_roberta_base_256_mean.npy"
+      },
+      "device": "cuda:0",
+      "logging": {
+        "level": "INFO"
+      },
+      "model": {
+        "activation": "relu",
+        "dropout": 0.5,
+        "hidden_dim": 256,
+        "name": "mlp",
+        "norm": "batchnorm",
+        "num_layers": 2
+      },
+      "num_runs": 3,
+      "paths": {
+        "data_root": "/hdd1/DataInHere/YHF/data",
+        "output_root": "outputs",
+        "split_root": "/hdd1/DataInHere/YHF/data/MAGB_split"
+      },
+      "seed": 42,
+      "task": {
+        "batch_size": 1024,
+        "early_stop_min_delta": 0.0001,
+        "early_stop_min_epoch": 30,
+        "edge_index_override_path": null,
+        "epochs": 300,
+        "eval_every": 1,
+        "evaluate_test": true,
+        "grad_clip": 1.0,
+        "inference_batch_size": 4096,
+        "inference_mode": "full",
+        "loss": {
+          "aux_weight": 1.0
+        },
+        "lr": 0.001,
+        "max_train_batches": null,
+        "name": "nc",
+        "num_neighbors": 15,
+        "optimizer": "adamw",
+        "patience": 30,
+        "protocol_version": "unified_full_graph_nc_v1",
+        "run_metrics_path": null,
+        "save_ckpt_path": null,
+        "scheduler": null,
+        "scheduler_min_lr": 1e-05,
+        "scheduler_warmup_epochs": 10,
+        "training_mode": "full_graph",
+        "weight_decay": 0.0001
+      }
+    },
+    "Movies": {
+      "dataset": {
+        "add_self_loops": false,
+        "auto_generate_splits": true,
+        "feature_dtype": "float32",
+        "graph_path": "/hdd1/DataInHere/YHF/data/Movies/MoviesGraph.pt",
+        "image_feat_path": "/hdd1/DataInHere/YHF/data/Movies/ImageFeature/Movies_openai_clip-vit-large-patch14.npy",
+        "lp_num_neg": 150,
+        "lp_split_path": "/hdd1/DataInHere/YHF/data/MAGB_split/Movies_lp_seed42_val0.2_test0.2_neg150_filtered1.pt",
+        "lp_split_undirected": true,
+        "lp_test_ratio": 0.2,
+        "lp_val_ratio": 0.2,
+        "make_undirected": true,
+        "name": "Movies",
+        "nc_split_path": "/hdd1/DataInHere/YHF/data/MAGB_split/Movies_nc_seed42_train0.6_val0.2.pt",
+        "nc_train_ratio": 0.6,
+        "nc_val_ratio": 0.2,
+        "num_classes": 20,
+        "source": "magb",
+        "tasks": [
+          "nc",
+          "lp"
+        ],
+        "text_feat_path": "/hdd1/DataInHere/YHF/data/Movies/TextFeature/Movies_roberta_base_512_mean.npy"
+      },
+      "device": "cuda:0",
+      "logging": {
+        "level": "INFO"
+      },
+      "model": {
+        "activation": "relu",
+        "dropout": 0.5,
+        "hidden_dim": 256,
+        "name": "mlp",
+        "norm": "batchnorm",
+        "num_layers": 2
+      },
+      "num_runs": 3,
+      "paths": {
+        "data_root": "/hdd1/DataInHere/YHF/data",
+        "output_root": "outputs",
+        "split_root": "/hdd1/DataInHere/YHF/data/MAGB_split"
+      },
+      "seed": 42,
+      "task": {
+        "batch_size": 1024,
+        "early_stop_min_delta": 0.0001,
+        "early_stop_min_epoch": 30,
+        "edge_index_override_path": null,
+        "epochs": 300,
+        "eval_every": 1,
+        "evaluate_test": true,
+        "grad_clip": 1.0,
+        "inference_batch_size": 4096,
+        "inference_mode": "full",
+        "loss": {
+          "aux_weight": 1.0
+        },
+        "lr": 0.001,
+        "max_train_batches": null,
+        "name": "nc",
+        "num_neighbors": 15,
+        "optimizer": "adamw",
+        "patience": 30,
+        "protocol_version": "unified_full_graph_nc_v1",
+        "run_metrics_path": null,
+        "save_ckpt_path": null,
+        "scheduler": null,
+        "scheduler_min_lr": 1e-05,
+        "scheduler_warmup_epochs": 10,
+        "training_mode": "full_graph",
+        "weight_decay": 0.0001
+      }
+    },
+    "Reddit-S": {
+      "dataset": {
+        "add_self_loops": false,
+        "auto_generate_splits": true,
+        "feature_dtype": "float32",
+        "graph_path": "/hdd1/DataInHere/YHF/data/Reddit-S/RedditSGraph.pt",
+        "image_feat_path": "/hdd1/DataInHere/YHF/data/Reddit-S/ImageFeature/RedditS_openai_clip-vit-large-patch14.npy",
+        "lp_num_neg": 150,
+        "lp_split_path": "/hdd1/DataInHere/YHF/data/MAGB_split/Reddit-S_lp_seed42_val0.2_test0.2_neg150_filtered1.pt",
+        "lp_split_undirected": true,
+        "lp_test_ratio": 0.2,
+        "lp_val_ratio": 0.2,
+        "make_undirected": true,
+        "name": "Reddit-S",
+        "nc_split_path": "/hdd1/DataInHere/YHF/data/MAGB_split/Reddit-S_nc_seed42_train0.6_val0.2.pt",
+        "nc_train_ratio": 0.6,
+        "nc_val_ratio": 0.2,
+        "num_classes": 20,
+        "source": "magb",
+        "tasks": [
+          "nc",
+          "lp"
+        ],
+        "text_feat_path": "/hdd1/DataInHere/YHF/data/Reddit-S/TextFeature/RedditS_roberta_base_100_mean.npy"
+      },
+      "device": "cuda:0",
+      "logging": {
+        "level": "INFO"
+      },
+      "model": {
+        "activation": "relu",
+        "dropout": 0.5,
+        "hidden_dim": 256,
+        "name": "mlp",
+        "norm": "batchnorm",
+        "num_layers": 2
+      },
+      "num_runs": 3,
+      "paths": {
+        "data_root": "/hdd1/DataInHere/YHF/data",
+        "output_root": "outputs",
+        "split_root": "/hdd1/DataInHere/YHF/data/MAGB_split"
+      },
+      "seed": 42,
+      "task": {
+        "batch_size": 1024,
+        "early_stop_min_delta": 0.0001,
+        "early_stop_min_epoch": 30,
+        "edge_index_override_path": null,
+        "epochs": 300,
+        "eval_every": 1,
+        "evaluate_test": true,
+        "grad_clip": 1.0,
+        "inference_batch_size": 4096,
+        "inference_mode": "full",
+        "loss": {
+          "aux_weight": 1.0
+        },
+        "lr": 0.001,
+        "max_train_batches": null,
+        "name": "nc",
+        "num_neighbors": 15,
+        "optimizer": "adamw",
+        "patience": 30,
+        "protocol_version": "unified_full_graph_nc_v1",
+        "run_metrics_path": null,
+        "save_ckpt_path": null,
+        "scheduler": null,
+        "scheduler_min_lr": 1e-05,
+        "scheduler_warmup_epochs": 10,
+        "training_mode": "full_graph",
+        "weight_decay": 0.0001
+      }
+    },
+    "Toys": {
+      "dataset": {
+        "add_self_loops": false,
+        "auto_generate_splits": true,
+        "feature_dtype": "float32",
+        "graph_path": "/hdd1/DataInHere/YHF/data/Toys/ToysGraph.pt",
+        "image_feat_path": "/hdd1/DataInHere/YHF/data/Toys/ImageFeature/Toys_openai_clip-vit-large-patch14.npy",
+        "lp_num_neg": 150,
+        "lp_split_path": "/hdd1/DataInHere/YHF/data/MAGB_split/Toys_lp_seed42_val0.2_test0.2_neg150_filtered1.pt",
+        "lp_split_undirected": true,
+        "lp_test_ratio": 0.2,
+        "lp_val_ratio": 0.2,
+        "make_undirected": true,
+        "name": "Toys",
+        "nc_split_path": "/hdd1/DataInHere/YHF/data/MAGB_split/Toys_nc_seed42_train0.6_val0.2.pt",
+        "nc_train_ratio": 0.6,
+        "nc_val_ratio": 0.2,
+        "num_classes": 18,
+        "source": "magb",
+        "tasks": [
+          "nc",
+          "lp"
+        ],
+        "text_feat_path": "/hdd1/DataInHere/YHF/data/Toys/TextFeature/Toys_roberta_base_512_mean.npy"
+      },
+      "device": "cuda:0",
+      "logging": {
+        "level": "INFO"
+      },
+      "model": {
+        "activation": "relu",
+        "dropout": 0.5,
+        "hidden_dim": 256,
+        "name": "mlp",
+        "norm": "batchnorm",
+        "num_layers": 2
+      },
+      "num_runs": 3,
+      "paths": {
+        "data_root": "/hdd1/DataInHere/YHF/data",
+        "output_root": "outputs",
+        "split_root": "/hdd1/DataInHere/YHF/data/MAGB_split"
+      },
+      "seed": 42,
+      "task": {
+        "batch_size": 1024,
+        "early_stop_min_delta": 0.0001,
+        "early_stop_min_epoch": 30,
+        "edge_index_override_path": null,
+        "epochs": 300,
+        "eval_every": 1,
+        "evaluate_test": true,
+        "grad_clip": 1.0,
+        "inference_batch_size": 4096,
+        "inference_mode": "full",
+        "loss": {
+          "aux_weight": 1.0
+        },
+        "lr": 0.001,
+        "max_train_batches": null,
+        "name": "nc",
+        "num_neighbors": 15,
+        "optimizer": "adamw",
+        "patience": 30,
+        "protocol_version": "unified_full_graph_nc_v1",
+        "run_metrics_path": null,
+        "save_ckpt_path": null,
+        "scheduler": null,
+        "scheduler_min_lr": 1e-05,
+        "scheduler_warmup_epochs": 10,
+        "training_mode": "full_graph",
+        "weight_decay": 0.0001
+      }
+    },
+    "ele-fashion": {
+      "dataset": {
+        "add_self_loops": false,
+        "edge_path": "/hdd1/DataInHere/YHF/data/ele-fashion/nc_edges-nodeid.pt",
+        "feature_dtype": "float32",
+        "joint_feat_path": "/hdd1/DataInHere/YHF/data/ele-fashion/clip_feat.pt",
+        "label_path": "/hdd1/DataInHere/YHF/data/ele-fashion/labels-w-missing.pt",
+        "make_undirected": true,
+        "name": "ele-fashion",
+        "node_mapping_path": "/hdd1/DataInHere/YHF/data/ele-fashion/node_mapping.pt",
+        "node_split_path": "/hdd1/DataInHere/YHF/data/ele-fashion/split.pt",
+        "num_classes": 12,
+        "root": "/hdd1/DataInHere/YHF/data/ele-fashion",
+        "source": "mmgraph",
+        "tasks": [
+          "nc"
+        ],
+        "text_dim": 512,
+        "visual_dim": 512
+      },
+      "device": "cuda:0",
+      "logging": {
+        "level": "INFO"
+      },
+      "model": {
+        "activation": "relu",
+        "dropout": 0.5,
+        "hidden_dim": 256,
+        "name": "mlp",
+        "norm": "batchnorm",
+        "num_layers": 2
+      },
+      "num_runs": 3,
+      "paths": {
+        "data_root": "/hdd1/DataInHere/YHF/data",
+        "output_root": "outputs",
+        "split_root": "/hdd1/DataInHere/YHF/data/MAGB_split"
+      },
+      "seed": 42,
+      "task": {
+        "batch_size": 1024,
+        "early_stop_min_delta": 0.0001,
+        "early_stop_min_epoch": 30,
+        "edge_index_override_path": null,
+        "epochs": 300,
+        "eval_every": 1,
+        "evaluate_test": true,
+        "grad_clip": 1.0,
+        "inference_batch_size": 4096,
+        "inference_mode": "full",
+        "loss": {
+          "aux_weight": 1.0
+        },
+        "lr": 0.001,
+        "max_train_batches": null,
+        "name": "nc",
+        "num_neighbors": 15,
+        "optimizer": "adamw",
+        "patience": 30,
+        "protocol_version": "unified_full_graph_nc_v1",
+        "run_metrics_path": null,
+        "save_ckpt_path": null,
+        "scheduler": null,
+        "scheduler_min_lr": 1e-05,
+        "scheduler_warmup_epochs": 10,
+        "training_mode": "full_graph",
+        "weight_decay": 0.0001
+      }
+    }
+  },
+  "decision_rules": {
+    "cross_dataset_majority": 3,
+    "p1_min_mean_abs_percentile_gap": 0.05,
+    "p2_min_abs_directional_asymmetry": 0.0,
+    "p3_min_abs_matched_structure_effect": 0.0,
+    "p3_seed_sign_consistency": 2
+  },
+  "diagnostic_host": {
+    "batch_size": 8192,
+    "epochs": 200,
+    "hidden_dim": 128,
+    "low_quality_accuracy_gain": 0.02,
+    "lr": 0.001,
+    "min_delta": 1e-05,
+    "patience": 20,
+    "train_node_cap": null,
+    "weight_decay": 0.0001
+  },
+  "formal_host_seeds": [
+    0,
+    1,
+    2
+  ],
+  "interaction": {
+    "batch_size": 4096,
+    "matched_subsampling_repeats": 20,
+    "max_fit_directed_edges": 50000,
+    "max_validation_directed_edges": 50000,
+    "neighbor_cap": 32,
+    "operator_alpha": 0.1,
+    "operator_bootstrap_reps": 300,
+    "p1_bootstrap_reps": 300,
+    "p2_alphas": [
+      0.05,
+      0.1,
+      0.2
+    ],
+    "p2_bootstrap_reps": 300,
+    "p3_alphas": [
+      0.05,
+      0.1,
+      0.2
+    ],
+    "p3_bootstrap_reps": 200
+  },
+  "outputs": {
+    "raw_root": "outputs/interaction_study_v1",
+    "report_root": "reports/interaction_study_v1"
+  },
+  "primary_datasets": [
+    "Movies",
+    "Toys",
+    "Grocery",
+    "Reddit-S",
+    "ele-fashion"
+  ],
+  "protocol": {
+    "calib_split": "diagnostic_calib",
+    "causal_claim": false,
+    "fit_split": "diagnostic_fit",
+    "node_block_bootstrap_unit": "validation receiver node",
+    "operator_claim_vocabulary": "frozen-host operator response / interaction response / response profile",
+    "p1_compatibility": "source_matched_nonedge_cosine_percentile",
+    "p3_context_novelty_is_pure_topology": false,
+    "primary_semantic_features": "raw_text_and_image",
+    "projected_semantic_robustness": "diagnostic_host_hidden_states",
+    "report_split": "original_validation",
+    "test_label_access": false,
+    "test_metric_access": false,
+    "transductive_topology": true
+  },
+  "runtime_metadata": {
+    "cuda_versions": [
+      "12.1"
+    ],
+    "devices": [
+      "cuda:0"
+    ],
+    "gpu_names": [
+      "NVIDIA GeForce RTX 3090"
+    ],
+    "python_versions": [
+      "3.12.13"
+    ],
+    "torch_versions": [
+      "2.4.0+cu121"
+    ]
+  },
+  "smoke": {
+    "batch_size": 1024,
+    "bootstrap_reps": 40,
+    "compatibility_max_sources": 12000,
+    "compatibility_nonedges_per_source": 16,
+    "hidden_dim": 128,
+    "host_epochs": 3,
+    "host_patience": 2,
+    "interaction_cap": 1000,
+    "matched_subsampling_repeats": 5,
+    "train_node_cap": 2048
+  },
+  "study_name": "MAG_Problem_Validation_Interaction_Study_V1",
+  "study_seed": 2027,
+  "study_splits": {
+    "Grocery:seed_0": {
+      "calib_split": "diagnostic_calib",
+      "fit_split": "diagnostic_fit",
+      "index_sha256": {
+        "diagnostic_calib": "7ad99a2049c57e75193cc775433106ac3029e3da5c118a8b8c1bea119fa211c0",
+        "diagnostic_fit": "8a55d4772915cf43586b7bec4a4d194ef444c42a57ae3f646a8ab58dcfa086e5",
+        "original_test": "f5f08ee0f35624bda3533f53ef6950707b7c3208ef2c0dc236bf11859a4f80cb",
+        "original_train": "78a7ffae928464c7ea90fc9e25f97c5ab26bab855121a5cbf5aedd47cb7bda78",
+        "original_validation": "cb95fb79d273739e1e38037edddc536481294c23c471ae26987851ae38966d22"
+      },
+      "report_split": "original_validation",
+      "split_counts": {
+        "diagnostic_calib": 2051,
+        "diagnostic_fit": 8193,
+        "original_test": 3415,
+        "original_train": 10244,
+        "original_validation": 3415
+      },
+      "study_seed": 2027,
+      "test_label_access": false,
+      "test_metric_access": false,
+      "transductive_topology": true
+    },
+    "Grocery:seed_1": {
+      "calib_split": "diagnostic_calib",
+      "fit_split": "diagnostic_fit",
+      "index_sha256": {
+        "diagnostic_calib": "7ad99a2049c57e75193cc775433106ac3029e3da5c118a8b8c1bea119fa211c0",
+        "diagnostic_fit": "8a55d4772915cf43586b7bec4a4d194ef444c42a57ae3f646a8ab58dcfa086e5",
+        "original_test": "f5f08ee0f35624bda3533f53ef6950707b7c3208ef2c0dc236bf11859a4f80cb",
+        "original_train": "78a7ffae928464c7ea90fc9e25f97c5ab26bab855121a5cbf5aedd47cb7bda78",
+        "original_validation": "cb95fb79d273739e1e38037edddc536481294c23c471ae26987851ae38966d22"
+      },
+      "report_split": "original_validation",
+      "split_counts": {
+        "diagnostic_calib": 2051,
+        "diagnostic_fit": 8193,
+        "original_test": 3415,
+        "original_train": 10244,
+        "original_validation": 3415
+      },
+      "study_seed": 2027,
+      "test_label_access": false,
+      "test_metric_access": false,
+      "transductive_topology": true
+    },
+    "Grocery:seed_2": {
+      "calib_split": "diagnostic_calib",
+      "fit_split": "diagnostic_fit",
+      "index_sha256": {
+        "diagnostic_calib": "7ad99a2049c57e75193cc775433106ac3029e3da5c118a8b8c1bea119fa211c0",
+        "diagnostic_fit": "8a55d4772915cf43586b7bec4a4d194ef444c42a57ae3f646a8ab58dcfa086e5",
+        "original_test": "f5f08ee0f35624bda3533f53ef6950707b7c3208ef2c0dc236bf11859a4f80cb",
+        "original_train": "78a7ffae928464c7ea90fc9e25f97c5ab26bab855121a5cbf5aedd47cb7bda78",
+        "original_validation": "cb95fb79d273739e1e38037edddc536481294c23c471ae26987851ae38966d22"
+      },
+      "report_split": "original_validation",
+      "split_counts": {
+        "diagnostic_calib": 2051,
+        "diagnostic_fit": 8193,
+        "original_test": 3415,
+        "original_train": 10244,
+        "original_validation": 3415
+      },
+      "study_seed": 2027,
+      "test_label_access": false,
+      "test_metric_access": false,
+      "transductive_topology": true
+    },
+    "Movies:seed_0": {
+      "calib_split": "diagnostic_calib",
+      "fit_split": "diagnostic_fit",
+      "index_sha256": {
+        "diagnostic_calib": "8a50121c628223d3c91473a60e8ded8b1e36bcf5ee156ff53ce3c4d6dae3001b",
+        "diagnostic_fit": "57dc0e8df58caa06154f405ed9b1513645f9c2207523c206403b868bb7c3fa6d",
+        "original_test": "f9807e3c375b4711ef3d1ed6bef06ba0632320b50eba71f8cb760e24efb6c31f",
+        "original_train": "260d595d024da09e8a1b6180c1a28ec4dc1991bace34dcc4c880813da14746e1",
+        "original_validation": "c875f204548401feffe16b7ef2b8dbe40ef6c2e45b15abbbc2cea7d8fa078c75"
+      },
+      "report_split": "original_validation",
+      "split_counts": {
+        "diagnostic_calib": 2000,
+        "diagnostic_fit": 8003,
+        "original_test": 3335,
+        "original_train": 10003,
+        "original_validation": 3334
+      },
+      "study_seed": 2027,
+      "test_label_access": false,
+      "test_metric_access": false,
+      "transductive_topology": true
+    },
+    "Movies:seed_1": {
+      "calib_split": "diagnostic_calib",
+      "fit_split": "diagnostic_fit",
+      "index_sha256": {
+        "diagnostic_calib": "8a50121c628223d3c91473a60e8ded8b1e36bcf5ee156ff53ce3c4d6dae3001b",
+        "diagnostic_fit": "57dc0e8df58caa06154f405ed9b1513645f9c2207523c206403b868bb7c3fa6d",
+        "original_test": "f9807e3c375b4711ef3d1ed6bef06ba0632320b50eba71f8cb760e24efb6c31f",
+        "original_train": "260d595d024da09e8a1b6180c1a28ec4dc1991bace34dcc4c880813da14746e1",
+        "original_validation": "c875f204548401feffe16b7ef2b8dbe40ef6c2e45b15abbbc2cea7d8fa078c75"
+      },
+      "report_split": "original_validation",
+      "split_counts": {
+        "diagnostic_calib": 2000,
+        "diagnostic_fit": 8003,
+        "original_test": 3335,
+        "original_train": 10003,
+        "original_validation": 3334
+      },
+      "study_seed": 2027,
+      "test_label_access": false,
+      "test_metric_access": false,
+      "transductive_topology": true
+    },
+    "Movies:seed_2": {
+      "calib_split": "diagnostic_calib",
+      "fit_split": "diagnostic_fit",
+      "index_sha256": {
+        "diagnostic_calib": "8a50121c628223d3c91473a60e8ded8b1e36bcf5ee156ff53ce3c4d6dae3001b",
+        "diagnostic_fit": "57dc0e8df58caa06154f405ed9b1513645f9c2207523c206403b868bb7c3fa6d",
+        "original_test": "f9807e3c375b4711ef3d1ed6bef06ba0632320b50eba71f8cb760e24efb6c31f",
+        "original_train": "260d595d024da09e8a1b6180c1a28ec4dc1991bace34dcc4c880813da14746e1",
+        "original_validation": "c875f204548401feffe16b7ef2b8dbe40ef6c2e45b15abbbc2cea7d8fa078c75"
+      },
+      "report_split": "original_validation",
+      "split_counts": {
+        "diagnostic_calib": 2000,
+        "diagnostic_fit": 8003,
+        "original_test": 3335,
+        "original_train": 10003,
+        "original_validation": 3334
+      },
+      "study_seed": 2027,
+      "test_label_access": false,
+      "test_metric_access": false,
+      "transductive_topology": true
+    },
+    "Reddit-S:seed_0": {
+      "calib_split": "diagnostic_calib",
+      "fit_split": "diagnostic_fit",
+      "index_sha256": {
+        "diagnostic_calib": "2205cd20f214a005f1e49faff96556cee4582a7ed21414a192effd42e2bb0e6b",
+        "diagnostic_fit": "c020e37156225e5162d534cbac4b87838822b3f2bcbd99c91d3afba3997fd50e",
+        "original_test": "67bcf958359513dd41027a992409e2ae52bf57af9d133d99bb6e829e11274178",
+        "original_train": "6a1281bfdcbb32c3c9b353e2aa1b1e6521a26a1cd4fef69cc0baaf140347ae44",
+        "original_validation": "8bbd32a9eaf05b1173bd827e1f10ec46ec347123c4ef9e93d79635fdfc24a7fa"
+      },
+      "report_split": "original_validation",
+      "split_counts": {
+        "diagnostic_calib": 1905,
+        "diagnostic_fit": 7631,
+        "original_test": 3179,
+        "original_train": 9536,
+        "original_validation": 3179
+      },
+      "study_seed": 2027,
+      "test_label_access": false,
+      "test_metric_access": false,
+      "transductive_topology": true
+    },
+    "Reddit-S:seed_1": {
+      "calib_split": "diagnostic_calib",
+      "fit_split": "diagnostic_fit",
+      "index_sha256": {
+        "diagnostic_calib": "2205cd20f214a005f1e49faff96556cee4582a7ed21414a192effd42e2bb0e6b",
+        "diagnostic_fit": "c020e37156225e5162d534cbac4b87838822b3f2bcbd99c91d3afba3997fd50e",
+        "original_test": "67bcf958359513dd41027a992409e2ae52bf57af9d133d99bb6e829e11274178",
+        "original_train": "6a1281bfdcbb32c3c9b353e2aa1b1e6521a26a1cd4fef69cc0baaf140347ae44",
+        "original_validation": "8bbd32a9eaf05b1173bd827e1f10ec46ec347123c4ef9e93d79635fdfc24a7fa"
+      },
+      "report_split": "original_validation",
+      "split_counts": {
+        "diagnostic_calib": 1905,
+        "diagnostic_fit": 7631,
+        "original_test": 3179,
+        "original_train": 9536,
+        "original_validation": 3179
+      },
+      "study_seed": 2027,
+      "test_label_access": false,
+      "test_metric_access": false,
+      "transductive_topology": true
+    },
+    "Reddit-S:seed_2": {
+      "calib_split": "diagnostic_calib",
+      "fit_split": "diagnostic_fit",
+      "index_sha256": {
+        "diagnostic_calib": "2205cd20f214a005f1e49faff96556cee4582a7ed21414a192effd42e2bb0e6b",
+        "diagnostic_fit": "c020e37156225e5162d534cbac4b87838822b3f2bcbd99c91d3afba3997fd50e",
+        "original_test": "67bcf958359513dd41027a992409e2ae52bf57af9d133d99bb6e829e11274178",
+        "original_train": "6a1281bfdcbb32c3c9b353e2aa1b1e6521a26a1cd4fef69cc0baaf140347ae44",
+        "original_validation": "8bbd32a9eaf05b1173bd827e1f10ec46ec347123c4ef9e93d79635fdfc24a7fa"
+      },
+      "report_split": "original_validation",
+      "split_counts": {
+        "diagnostic_calib": 1905,
+        "diagnostic_fit": 7631,
+        "original_test": 3179,
+        "original_train": 9536,
+        "original_validation": 3179
+      },
+      "study_seed": 2027,
+      "test_label_access": false,
+      "test_metric_access": false,
+      "transductive_topology": true
+    },
+    "Toys:seed_0": {
+      "calib_split": "diagnostic_calib",
+      "fit_split": "diagnostic_fit",
+      "index_sha256": {
+        "diagnostic_calib": "c4b4d0a42a87ed15b233077068d07f7dc73582626d685349622e2f72935cf1ab",
+        "diagnostic_fit": "b29ec30fdf556b9804c68fb66447654c253ba3cfb847f75ef0333b7e52a29d12",
+        "original_test": "e236a71435604c5c06086a20fb2e4c7af4f07ae0ee1e7c5718cbebbb7e3dc255",
+        "original_train": "ff1198e6115713fe8b446d9017194d52874bf81a9a76a758b8f3f0e456b98139",
+        "original_validation": "4db652625621d8f9c2f6f73ce4dad95b8c482665d55a8d81d7573a2f88a0bdbc"
+      },
+      "report_split": "original_validation",
+      "split_counts": {
+        "diagnostic_calib": 2484,
+        "diagnostic_fit": 9933,
+        "original_test": 4139,
+        "original_train": 12417,
+        "original_validation": 4139
+      },
+      "study_seed": 2027,
+      "test_label_access": false,
+      "test_metric_access": false,
+      "transductive_topology": true
+    },
+    "Toys:seed_1": {
+      "calib_split": "diagnostic_calib",
+      "fit_split": "diagnostic_fit",
+      "index_sha256": {
+        "diagnostic_calib": "c4b4d0a42a87ed15b233077068d07f7dc73582626d685349622e2f72935cf1ab",
+        "diagnostic_fit": "b29ec30fdf556b9804c68fb66447654c253ba3cfb847f75ef0333b7e52a29d12",
+        "original_test": "e236a71435604c5c06086a20fb2e4c7af4f07ae0ee1e7c5718cbebbb7e3dc255",
+        "original_train": "ff1198e6115713fe8b446d9017194d52874bf81a9a76a758b8f3f0e456b98139",
+        "original_validation": "4db652625621d8f9c2f6f73ce4dad95b8c482665d55a8d81d7573a2f88a0bdbc"
+      },
+      "report_split": "original_validation",
+      "split_counts": {
+        "diagnostic_calib": 2484,
+        "diagnostic_fit": 9933,
+        "original_test": 4139,
+        "original_train": 12417,
+        "original_validation": 4139
+      },
+      "study_seed": 2027,
+      "test_label_access": false,
+      "test_metric_access": false,
+      "transductive_topology": true
+    },
+    "Toys:seed_2": {
+      "calib_split": "diagnostic_calib",
+      "fit_split": "diagnostic_fit",
+      "index_sha256": {
+        "diagnostic_calib": "c4b4d0a42a87ed15b233077068d07f7dc73582626d685349622e2f72935cf1ab",
+        "diagnostic_fit": "b29ec30fdf556b9804c68fb66447654c253ba3cfb847f75ef0333b7e52a29d12",
+        "original_test": "e236a71435604c5c06086a20fb2e4c7af4f07ae0ee1e7c5718cbebbb7e3dc255",
+        "original_train": "ff1198e6115713fe8b446d9017194d52874bf81a9a76a758b8f3f0e456b98139",
+        "original_validation": "4db652625621d8f9c2f6f73ce4dad95b8c482665d55a8d81d7573a2f88a0bdbc"
+      },
+      "report_split": "original_validation",
+      "split_counts": {
+        "diagnostic_calib": 2484,
+        "diagnostic_fit": 9933,
+        "original_test": 4139,
+        "original_train": 12417,
+        "original_validation": 4139
+      },
+      "study_seed": 2027,
+      "test_label_access": false,
+      "test_metric_access": false,
+      "transductive_topology": true
+    },
+    "ele-fashion:seed_0": {
+      "calib_split": "diagnostic_calib",
+      "fit_split": "diagnostic_fit",
+      "index_sha256": {
+        "diagnostic_calib": "73aacc379adbf6d08af3dbd87bba280ff1b310be56adf22321bba9273a13774b",
+        "diagnostic_fit": "63935c8b7553165aa17e294997210d3084e4278866fea3313fe864a2b3b6f631",
+        "original_test": "0688cc9d334662725abc0f12b4309c8561978304103dc7298b4794aad9024b48",
+        "original_train": "bc06e13e693cd7d16dd55525414382892ba765024d325351a51c185e972aa203",
+        "original_validation": "7c9bfbddeae578e645f237fbcbe2ed3510fc06754dcff2519e233f38e60a1a35"
+      },
+      "report_split": "original_validation",
+      "split_counts": {
+        "diagnostic_calib": 11733,
+        "diagnostic_fit": 46926,
+        "original_test": 29330,
+        "original_train": 58659,
+        "original_validation": 9777
+      },
+      "study_seed": 2027,
+      "test_label_access": false,
+      "test_metric_access": false,
+      "transductive_topology": true
+    },
+    "ele-fashion:seed_1": {
+      "calib_split": "diagnostic_calib",
+      "fit_split": "diagnostic_fit",
+      "index_sha256": {
+        "diagnostic_calib": "73aacc379adbf6d08af3dbd87bba280ff1b310be56adf22321bba9273a13774b",
+        "diagnostic_fit": "63935c8b7553165aa17e294997210d3084e4278866fea3313fe864a2b3b6f631",
+        "original_test": "0688cc9d334662725abc0f12b4309c8561978304103dc7298b4794aad9024b48",
+        "original_train": "bc06e13e693cd7d16dd55525414382892ba765024d325351a51c185e972aa203",
+        "original_validation": "7c9bfbddeae578e645f237fbcbe2ed3510fc06754dcff2519e233f38e60a1a35"
+      },
+      "report_split": "original_validation",
+      "split_counts": {
+        "diagnostic_calib": 11733,
+        "diagnostic_fit": 46926,
+        "original_test": 29330,
+        "original_train": 58659,
+        "original_validation": 9777
+      },
+      "study_seed": 2027,
+      "test_label_access": false,
+      "test_metric_access": false,
+      "transductive_topology": true
+    },
+    "ele-fashion:seed_2": {
+      "calib_split": "diagnostic_calib",
+      "fit_split": "diagnostic_fit",
+      "index_sha256": {
+        "diagnostic_calib": "73aacc379adbf6d08af3dbd87bba280ff1b310be56adf22321bba9273a13774b",
+        "diagnostic_fit": "63935c8b7553165aa17e294997210d3084e4278866fea3313fe864a2b3b6f631",
+        "original_test": "0688cc9d334662725abc0f12b4309c8561978304103dc7298b4794aad9024b48",
+        "original_train": "bc06e13e693cd7d16dd55525414382892ba765024d325351a51c185e972aa203",
+        "original_validation": "7c9bfbddeae578e645f237fbcbe2ed3510fc06754dcff2519e233f38e60a1a35"
+      },
+      "report_split": "original_validation",
+      "split_counts": {
+        "diagnostic_calib": 11733,
+        "diagnostic_fit": 46926,
+        "original_test": 29330,
+        "original_train": 58659,
+        "original_validation": 9777
+      },
+      "study_seed": 2027,
+      "test_label_access": false,
+      "test_metric_access": false,
+      "transductive_topology": true
+    }
+  }
+}

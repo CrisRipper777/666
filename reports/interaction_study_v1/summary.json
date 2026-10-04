@@ -1,0 +1,247 @@
+{
+  "complete": true,
+  "dataset_decisions": [
+    {
+      "audit_only": false,
+      "dataset": "Movies",
+      "edges_directed": 160802,
+      "estimated_diagnostic_gpu_peak_gb": 0.250565792,
+      "expected_seed_runs": 3,
+      "image_dim": 768,
+      "max_degree": 212.0,
+      "mean_degree": 9.645033836364746,
+      "median_degree": 5.0,
+      "nodes": 16672,
+      "p1_raw_status": "Supported",
+      "p2_alignment_low_quality_any_seed": false,
+      "p2_directional_asymmetry_status": "Supported",
+      "p2_mean_asymmetry_alpha_0_1": 0.006152264660619492,
+      "p2_mean_seed_ci_high": 0.008572847706203734,
+      "p2_mean_seed_ci_low": 0.0038036678038061516,
+      "p3_matched_structure_status": "Supported",
+      "p3_seed_details": [
+        {
+          "effects": [
+            -0.02885982698249317,
+            -0.021509770706188983,
+            -0.061829836028922947
+          ],
+          "modality": "text",
+          "negative_seed_count": 3,
+          "positive_seed_count": 0
+        }
+      ],
+      "p95_degree": 33.0,
+      "raw_feature_gb": 0.102432768,
+      "successful_seed_runs": 3,
+      "test_nodes": 3335,
+      "text_dim": 768,
+      "train_nodes": 10003,
+      "validation_nodes": 3334,
+      "zero_degree_nodes": 0
+    },
+    {
+      "audit_only": false,
+      "dataset": "Toys",
+      "edges_directed": 113402,
+      "estimated_diagnostic_gpu_peak_gb": 0.310950312,
+      "expected_seed_runs": 3,
+      "image_dim": 768,
+      "max_degree": 179.0,
+      "mean_degree": 5.479681015014648,
+      "median_degree": 3.0,
+      "nodes": 20695,
+      "p1_raw_status": "Supported",
+      "p2_alignment_low_quality_any_seed": false,
+      "p2_directional_asymmetry_status": "Mixed",
+      "p2_mean_asymmetry_alpha_0_1": 0.0016184471164484035,
+      "p2_mean_seed_ci_high": 0.004130130480235223,
+      "p2_mean_seed_ci_low": -0.0006564455542101668,
+      "p3_matched_structure_status": "Supported",
+      "p3_seed_details": [
+        {
+          "effects": [
+            -0.10189399553593208,
+            -0.08808762287338011,
+            -0.09991968628446166
+          ],
+          "modality": "text",
+          "negative_seed_count": 3,
+          "positive_seed_count": 0
+        }
+      ],
+      "p95_degree": 19.0,
+      "raw_feature_gb": 0.12715008,
+      "successful_seed_runs": 3,
+      "test_nodes": 4139,
+      "text_dim": 768,
+      "train_nodes": 12417,
+      "validation_nodes": 4139,
+      "zero_degree_nodes": 10
+    },
+    {
+      "audit_only": false,
+      "dataset": "Grocery",
+      "edges_directed": 142262,
+      "estimated_diagnostic_gpu_peak_gb": 0.256608496,
+      "expected_seed_runs": 3,
+      "image_dim": 768,
+      "max_degree": 429.0,
+      "mean_degree": 8.332083702087402,
+      "median_degree": 4.0,
+      "nodes": 17074,
+      "p1_raw_status": "Supported",
+      "p2_alignment_low_quality_any_seed": false,
+      "p2_directional_asymmetry_status": "Supported",
+      "p2_mean_asymmetry_alpha_0_1": -0.0034163511255024238,
+      "p2_mean_seed_ci_high": -0.00032241818910531175,
+      "p2_mean_seed_ci_low": -0.00652229638857037,
+      "p3_matched_structure_status": "Supported",
+      "p3_seed_details": [
+        {
+          "effects": [
+            -0.06576148856814226,
+            -0.030944896145990736,
+            -0.05560405833087935
+          ],
+          "modality": "text",
+          "negative_seed_count": 3,
+          "positive_seed_count": 0
+        }
+      ],
+      "p95_degree": 30.0,
+      "raw_feature_gb": 0.104902656,
+      "successful_seed_runs": 3,
+      "test_nodes": 3415,
+      "text_dim": 768,
+      "train_nodes": 10244,
+      "validation_nodes": 3415,
+      "zero_degree_nodes": 0
+    },
+    {
+      "audit_only": false,
+      "dataset": "Reddit-S",
+      "edges_directed": 283080,
+      "estimated_diagnostic_gpu_peak_gb": 0.238862272,
+      "expected_seed_runs": 3,
+      "image_dim": 768,
+      "max_degree": 191.0,
+      "mean_degree": 17.810495376586914,
+      "median_degree": 3.0,
+      "nodes": 15894,
+      "p1_raw_status": "Supported",
+      "p2_alignment_low_quality_any_seed": false,
+      "p2_directional_asymmetry_status": "Supported",
+      "p2_mean_asymmetry_alpha_0_1": 0.00533460964393771,
+      "p2_mean_seed_ci_high": 0.007895161941776136,
+      "p2_mean_seed_ci_low": 0.002822256647217613,
+      "p3_matched_structure_status": "Unsupported",
+      "p3_seed_details": [
+        {
+          "effects": [
+            null,
+            null,
+            null
+          ],
+          "modality": "text",
+          "negative_seed_count": 0,
+          "positive_seed_count": 0
+        },
+        {
+          "effects": [
+            null,
+            null,
+            null
+          ],
+          "modality": "image",
+          "negative_seed_count": 0,
+          "positive_seed_count": 0
+        }
+      ],
+      "p95_degree": 131.0,
+      "raw_feature_gb": 0.097652736,
+      "successful_seed_runs": 3,
+      "test_nodes": 3179,
+      "text_dim": 768,
+      "train_nodes": 9536,
+      "validation_nodes": 3179,
+      "zero_degree_nodes": 0
+    },
+    {
+      "audit_only": false,
+      "dataset": "ele-fashion",
+      "edges_directed": 399172,
+      "estimated_diagnostic_gpu_peak_gb": 1.075447504,
+      "expected_seed_runs": 3,
+      "image_dim": 512,
+      "max_degree": 661.0,
+      "mean_degree": 4.082932949066162,
+      "median_degree": 2.0,
+      "nodes": 97766,
+      "p1_raw_status": "Supported",
+      "p2_alignment_low_quality_any_seed": false,
+      "p2_directional_asymmetry_status": "Mixed",
+      "p2_mean_asymmetry_alpha_0_1": -0.0012201004034546276,
+      "p2_mean_seed_ci_high": 6.748461808705965e-05,
+      "p2_mean_seed_ci_low": -0.0025602852981708724,
+      "p3_matched_structure_status": "Supported",
+      "p3_seed_details": [
+        {
+          "effects": [
+            0.001310230767633304,
+            0.02940469307068075,
+            0.014950998177928448
+          ],
+          "modality": "text",
+          "negative_seed_count": 0,
+          "positive_seed_count": 3
+        }
+      ],
+      "p95_degree": 13.0,
+      "raw_feature_gb": 0.400449536,
+      "successful_seed_runs": 3,
+      "test_nodes": 29330,
+      "text_dim": 512,
+      "train_nodes": 58659,
+      "validation_nodes": 9777,
+      "zero_degree_nodes": 3
+    },
+    {
+      "audit_only": true,
+      "dataset": "books-nc",
+      "edges_directed": 13682358,
+      "estimated_diagnostic_gpu_peak_gb": 7.485511604,
+      "expected_seed_runs": 0,
+      "image_dim": 512,
+      "max_degree": 1698.0,
+      "mean_degree": 19.965675354003906,
+      "median_degree": 13.0,
+      "nodes": 685294,
+      "p95_degree": 63.0,
+      "raw_feature_gb": 2.806964224,
+      "status": "audit only; full interaction study not run by protocol",
+      "successful_seed_runs": 0,
+      "test_nodes": 203428,
+      "text_dim": 512,
+      "train_nodes": 406689,
+      "validation_nodes": 67805,
+      "zero_degree_nodes": 0
+    }
+  ],
+  "decision_rules": {
+    "cross_dataset_majority": 3,
+    "p1_min_mean_abs_percentile_gap": 0.05,
+    "p2_min_abs_directional_asymmetry": 0.0,
+    "p3_min_abs_matched_structure_effect": 0.0,
+    "p3_seed_sign_consistency": 2
+  },
+  "expected_dataset_seed_runs": 15,
+  "failed_seed_runs": 0,
+  "failure_cases": [],
+  "p1_cross_dataset_status": "Supported",
+  "p2_cross_dataset_status": "Supported",
+  "p3_cross_dataset_status": "Supported",
+  "study_name": "MAG_Problem_Validation_Interaction_Study_V1",
+  "successful_seed_runs": 15,
+  "warning": "Decision labels apply only to the preregistered descriptive criteria; they do not establish causality or router performance."
+}

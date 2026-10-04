@@ -1,0 +1,77 @@
+study_name: MAG_Problem_Validation_Interaction_Study_V1
+study_seed: 2027
+primary_datasets: [Movies, Toys, Grocery, Reddit-S, ele-fashion]
+audit_datasets: [Movies, Toys, Grocery, Reddit-S, ele-fashion, books-nc]
+formal_host_seeds: [0, 1, 2]
+
+diagnostic_host:
+  hidden_dim: 128
+  lr: 0.001
+  weight_decay: 0.0001
+  epochs: 200
+  patience: 20
+  min_delta: 0.00001
+  batch_size: 8192
+  train_node_cap: null
+  low_quality_accuracy_gain: 0.02
+
+alignment:
+  ridge_regularization: 1.0
+  min_validation_cosine: 0.1
+
+compatibility:
+  max_sources: 250000
+  nonedges_per_source: 32
+  seed: 4103
+
+interaction:
+  neighbor_cap: 32
+  p2_alphas: [0.05, 0.1, 0.2]
+  p3_alphas: [0.05, 0.1, 0.2]
+  operator_alpha: 0.1
+  max_validation_directed_edges: 50000
+  max_fit_directed_edges: 50000
+  batch_size: 4096
+  p1_bootstrap_reps: 300
+  p2_bootstrap_reps: 300
+  p3_bootstrap_reps: 200
+  operator_bootstrap_reps: 300
+  matched_subsampling_repeats: 20
+
+decision_rules:
+  p1_min_mean_abs_percentile_gap: 0.05
+  p2_min_abs_directional_asymmetry: 0.0
+  p3_min_abs_matched_structure_effect: 0.0
+  cross_dataset_majority: 3
+  p3_seed_sign_consistency: 2
+
+smoke:
+  host_epochs: 3
+  host_patience: 2
+  train_node_cap: 2048
+  hidden_dim: 128
+  compatibility_max_sources: 12000
+  compatibility_nonedges_per_source: 16
+  interaction_cap: 1000
+  bootstrap_reps: 40
+  matched_subsampling_repeats: 5
+  batch_size: 1024
+
+outputs:
+  raw_root: outputs/interaction_study_v1
+  report_root: reports/interaction_study_v1
+
+protocol:
+  test_label_access: false
+  test_metric_access: false
+  transductive_topology: true
+  fit_split: diagnostic_fit
+  calib_split: diagnostic_calib
+  report_split: original_validation
+  primary_semantic_features: raw_text_and_image
+  projected_semantic_robustness: diagnostic_host_hidden_states
+  p1_compatibility: source_matched_nonedge_cosine_percentile
+  p3_context_novelty_is_pure_topology: false
+  causal_claim: false
+  operator_claim_vocabulary: frozen-host operator response / interaction response / response profile
+  node_block_bootstrap_unit: validation receiver node
