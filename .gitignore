@@ -1,6 +1,7 @@
 outputs/*
 !outputs/.gitkeep
 outputs/interaction_study_v1/
+outputs/interaction_study_v1_1/
 __pycache__/
 *.pyc
 .pytest_cache/

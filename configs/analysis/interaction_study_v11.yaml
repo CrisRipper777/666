@@ -1,0 +1,29 @@
+study_name: MAG_Interaction_Study_V1_1_Corrective_Robustness_Audit
+base_commit: b5fb04e3aa8a9a86b52f1b56f99135ef3783f17f
+formal_datasets: [Movies, Toys, Grocery, Reddit-S, ele-fashion]
+host_seeds: [0, 1, 2]
+
+p1_reference_seeds: [4103, 5103, 6103, 7103, 8103]
+p2_alphas: [0.05, 0.1, 0.2]
+p3_alphas: [0.05, 0.1, 0.2]
+operator_alpha: 0.1
+bootstrap_reps: 1000
+batch_size: 4096
+minimum_operator_margin: 0.001
+
+protocol:
+  positioning: post-hoc corrective and robustness audit of V1
+  test_label_access: false
+  test_metric_access: false
+  host_retraining: false
+  validation_split_reused_from_v1: true
+  receiver_block_bootstrap: true
+  p2_host_seed_aggregation: average_receiver_then_bootstrap
+  p3_matching: semantic_bin_x_source_degree_bin_x_receiver_degree_bin
+  p3_weight: min_high_low_count_per_stratum
+  operator_null_bank: source_count_matched_random_nonneighbors
+  books_nc_included: false
+
+outputs:
+  raw_root: outputs/interaction_study_v1_1
+  report_root: reports/interaction_study_v1_1
