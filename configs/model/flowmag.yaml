@@ -1,0 +1,38 @@
+name: flowmag
+
+# Independent topology-free stems and modality state width.
+hidden_dim: 256
+num_layers: 2
+prior_dim_per_modality: 64
+graph_block_dim: 128
+
+relation_dim: 64
+router_dim: 64
+adapter_rank: 16
+cross_heads: 2
+ffn_multiplier: 2
+
+dropout: 0.2
+attention_dropout: 0.0
+detach_candidate_descriptor: true
+null_cardinality_correction: true
+
+same_update_scale: 0.1
+cross_update_scale: 0.1
+
+warmup_ratio: 0.05
+controller_ramp_ratio: 0.10
+router_temp_start: 2.0
+router_temp_end: 1.0
+router_temp_anneal_end_ratio: 0.60
+
+init_smooth_prob: 0.75
+init_same_admission: 0.80
+init_cross_admission: 0.20
+
+lambda_prior: 0.05
+lambda_graph_start: 0.10
+graph_aux_decay_end_ratio: 0.40
+lambda_router_z: 1.0e-3
+
+eps: 1.0e-8

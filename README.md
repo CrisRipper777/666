@@ -20,6 +20,7 @@ Implemented models:
 - `dip`
 - `rolemag`
 - `cosi_mag_final`
+- `flowmag` (V0.2.1)
 
 ## Datasets
 
@@ -71,6 +72,14 @@ Run CoSI-MAG Final:
     python -m src.main dataset=Movies task=nc model=cosi_mag_final num_runs=3
     python -m src.main dataset=Movies task=lp model=cosi_mag_final num_runs=3
 
+Run a short FlowMAG technical smoke (validation only):
+
+```bash
+python -m src.main dataset=Movies task=nc model=flowmag num_runs=1 \
+  task.epochs=2 task.eval_every=1 task.evaluate_test=false \
+  model.warmup_ratio=0 model.controller_ramp_ratio=0 model.lambda_graph_start=0
+```
+
 Run DiP:
 
 ```bash
@@ -100,3 +109,4 @@ python -m src.main dataset=Movies task=nc model=mlp num_runs=1 task.epochs=1 tas
 - GNN models such as `gcn` and `sage` use PyG `NeighborLoader` / `LinkNeighborLoader`.
 - `model=dip` trains with full-graph message passing by default (`model.full_graph_training=true`) so pseudo nodes aggregate graph-level modality context rather than sampled subgraphs. LP still uses edge-label mini-batches and removes the current positive labels from the full message graph.
 - `model=dip` implements the exact DiP global pseudo-node recurrence; its `layerwise` inference API currently falls back to the exact full-graph DiP pass because pseudo-node states depend on all nodes at each recurrent step.
+- FlowMAG keeps separate text and image topology-free prior blocks alongside a graph-enriched block. Its scheduled controller requires validation checkpoint selection to wait until the controller ramp ends; its LP sampler fanout follows `model.num_layers`. See [FlowMAG V0.2.1](docs/flowmag_v0_2_1.md).

@@ -71,6 +71,11 @@ python scripts/make_magb_splits.py
 - Its max_order=3 / num_layers=3 setting matches baseline's default three-hop LP sampler. The model declares requires_full_lp_sampler_depth and no_weight_decay_parameter_names; both are supported by the common LP sampler and optimizer.
 - It retains baseline's unified full-graph NC and sampled LP task protocols; source task settings and experiment launchers are not imported.
 
+**FlowMAG V0.2.1 specifics** (`src/models/flowmag.py`):
+- Keeps separate topology-free text/image prior blocks and a graph-enriched output block; use `docs/flowmag_v0_2_1.md` for the component and sharing contract.
+- Training calls `set_epoch()`; validation checkpoints remain ineligible until the controller ramp completes. Task runners use optional supervised auxiliary hooks only on NC train nodes or the current LP training edge batch.
+- Declares `requires_full_lp_sampler_depth=True`, so LP fanouts are resolved to `model.num_layers`. It provides exact layerwise inference through one-hop `NeighborLoader` batches.
+
 **Task runners** (`src/tasks/`):
 - `nc.py`: Model + linear classifier. Metrics: Accuracy, Macro-F1. Early stopping on val accuracy. Gradient clipping `max_norm=1.0`.
 - `lp.py`: Model + `LinkPredictor`. Metrics: MRR, Hits@1/3/10. Early stopping on val MRR. Filtered negative sampling (negatives excluded from all positive edges). Positive label edges excluded from message-passing graph. Gradient clipping `max_norm=1.0`.

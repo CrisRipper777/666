@@ -15,6 +15,38 @@ def load_state_dict_cpu(module: torch.nn.Module, state_dict: dict[str, torch.Ten
     module.load_state_dict(copy.deepcopy(state_dict))
 
 
+def compute_optional_supervised_aux_loss(
+    model: torch.nn.Module,
+    *,
+    task: str,
+    aux_info: dict,
+    **kwargs,
+) -> torch.Tensor:
+    """Run a model's optional task-supervised hook, defaulting to exact zero."""
+    hook = getattr(model, "compute_supervised_aux_loss", None)
+    if not callable(hook):
+        parameter = next(model.parameters(), None)
+        return parameter.new_zeros(()) if parameter is not None else torch.zeros(())
+    result = hook(task=task, aux_info=aux_info, **kwargs)
+    loss = result.get("loss") if isinstance(result, dict) else result
+    if not isinstance(loss, torch.Tensor) or loss.numel() != 1:
+        raise TypeError("compute_supervised_aux_loss must return a scalar tensor or dict with scalar 'loss'")
+    return loss.reshape(())
+
+
+def checkpoint_is_eligible(model: torch.nn.Module, epoch: int) -> bool:
+    """Preserve baseline checkpoint behavior unless a model opts into a schedule."""
+    hook = getattr(model, "checkpoint_eligible", None)
+    return bool(hook(int(epoch))) if callable(hook) else True
+
+
+def restore_checkpoint_schedule(model: torch.nn.Module, epoch: int) -> None:
+    """Restore model-specific non-parameter schedule state after best-weight load."""
+    hook = getattr(model, "restore_checkpoint_epoch", None)
+    if callable(hook):
+        hook(int(epoch))
+
+
 def build_optimizer(parameters, cfg, model=None) -> torch.optim.Optimizer:
     """Build a task optimizer while honoring an imported model preset."""
     name = str(cfg.task.get("optimizer", "adamw")).strip().lower()

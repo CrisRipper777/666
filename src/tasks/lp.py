@@ -21,9 +21,12 @@ from omegaconf import ListConfig
 
 from src.tasks.common import (
     build_optimizer,
+    checkpoint_is_eligible,
     clone_state_dict,
+    compute_optional_supervised_aux_loss,
     load_state_dict_cpu,
     resolve_num_neighbors,
+    restore_checkpoint_schedule,
     scheduler_step,
 )
 from src.tasks.inference import infer_all_embeddings, resolve_inference_mode
@@ -602,24 +605,38 @@ def _run_single_lp(
                 batch = batch.to(device)
                 if hasattr(model, "_batch_n_id"):
                     model._batch_n_id = batch.n_id
-                z, _, _, aux_loss, _ = model(batch.x, batch.edge_index)
+                z, _, _, aux_loss, aux_info = model(batch.x, batch.edge_index)
                 if projection is not None:
                     z = projection(z)
                 src, dst = batch.edge_label_index
                 logits = predictor.score_pairs(z[src], z[dst])
                 labels = batch.edge_label.float()
+                supervised_aux = compute_optional_supervised_aux_loss(
+                    model,
+                    task="lp",
+                    aux_info=aux_info,
+                    edge_label_index=batch.edge_label_index,
+                    edge_label=labels,
+                )
             else:
                 edges, labels = batch
                 edges = edges.to(device)
                 labels = labels.to(device)
-                z_all, _, _, aux_loss, _ = model(x_all[edges.reshape(-1)], None)
+                z_all, _, _, aux_loss, aux_info = model(x_all[edges.reshape(-1)], None)
                 if projection is not None:
                     z_all = projection(z_all)
                 z_pairs = z_all.view(edges.size(0), 2, -1)
                 logits = predictor.score_pairs(z_pairs[:, 0], z_pairs[:, 1])
+                supervised_aux = compute_optional_supervised_aux_loss(
+                    model,
+                    task="lp",
+                    aux_info=aux_info,
+                    edge_label_index=torch.arange(edges.size(0) * 2, device=edges.device).reshape(-1, 2).T,
+                    edge_label=labels,
+                )
 
             _raise_if_nonfinite(logits, f"LP logits at epoch {epoch} batch {step}")
-            loss = criterion(logits, labels) + aux_weight * aux_loss
+            loss = criterion(logits, labels) + aux_weight * (aux_loss + supervised_aux)
             _raise_if_nonfinite(loss, f"LP loss at epoch {epoch} batch {step}")
             loss.backward()
             clip_parameters = list(model.parameters()) + list(predictor.parameters())
@@ -671,9 +688,12 @@ def _run_single_lp(
             format_pct(val_metrics["hits@10"]),
         )
 
-        improved = val_metrics["mrr"] > best_val + min_delta
+        checkpoint_eligible = checkpoint_is_eligible(model, epoch)
+        improved = checkpoint_eligible and val_metrics["mrr"] > best_val + min_delta
         stop_early = False
-        if improved:
+        if not checkpoint_eligible:
+            logger.info("Validation checkpoint selection deferred by model schedule at epoch %05d", epoch)
+        elif improved:
             best_val = val_metrics["mrr"]
             best_epoch = epoch
             best_metrics = {"val_mrr": val_metrics["mrr"]}
@@ -709,6 +729,7 @@ def _run_single_lp(
     load_state_dict_cpu(predictor, best_predictor_state)
     if projection is not None and best_projection_state is not None:
         load_state_dict_cpu(projection, best_projection_state)
+    restore_checkpoint_schedule(model, int(best_epoch))
 
     if bool(cfg.task.get("evaluate_test", True)):
         z = infer_all_embeddings(

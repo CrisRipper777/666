@@ -1,0 +1,93 @@
+{
+  "study": "FlowMAG V0.2.1 technical implementation smoke",
+  "branch": "research/flowmag-v0.2.1",
+  "base_sha": "579d8dcde6d9bf6d39efb4f9d88bf70a78acc38e",
+  "scope": {
+    "formal_experiment": false,
+    "test_metrics_computed": false,
+    "test_metrics_used_for_judgment": false,
+    "evaluate_test_for_all_real_smokes": false,
+    "claims_scientific_conclusion": false
+  },
+  "gpu": {
+    "torch_cuda_available_during_smokes": true,
+    "device": "cuda:0",
+    "device_count": 2,
+    "free_memory_before_flowmag_lp_smoke_gib": 23.35,
+    "peak_allocated_bytes": null,
+    "peak_memory_note": "Peak process memory was not captured. nvidia-smi was unavailable in this container, while PyTorch CUDA training worked."
+  },
+  "default_model_parameters": {
+    "nc": {
+      "total": 2530252,
+      "train_only_auxiliary_heads": 5180,
+      "inference_parameters": 2525072
+    },
+    "lp": {
+      "total": 2525331,
+      "train_only_auxiliary_heads": 259,
+      "inference_parameters": 2525072
+    }
+  },
+  "unit_and_integration_validation": {
+    "pytest_command": "python -m pytest -q",
+    "result": "21 passed",
+    "compileall": "passed: python -m compileall src tests",
+    "git_diff_check": "passed",
+    "full_vs_layerwise_inference": {
+      "result": "passed",
+      "max_absolute_error": 4.76837158203125e-07,
+      "model": "2-layer small synthetic graph, eval mode"
+    }
+  },
+  "real_data_smokes": {
+    "movies_flowmag_nc": {
+      "result": "passed",
+      "command": "python -m src.main dataset=Movies task=nc model=flowmag num_runs=1 task.epochs=2 task.eval_every=1 task.patience=5 task.evaluate_test=false model.warmup_ratio=0 model.controller_ramp_ratio=0 model.lambda_graph_start=0 device=cuda:0",
+      "evaluate_test": false,
+      "nodes": 16672,
+      "message_edges": 160802,
+      "output_shape": [16672, 256],
+      "model_parameters": 2530252,
+      "best_epoch": 1,
+      "validation_accuracy": 0.3293341398239136,
+      "validation_macro_f1": 0.02477436823104693,
+      "interpretation": "validation-only execution diagnostic; not a performance conclusion"
+    },
+    "movies_flowmag_lp": {
+      "result": "passed",
+      "command": "python -m src.main dataset=Movies task=lp model=flowmag num_runs=1 task.epochs=1 task.eval_every=1 task.max_train_batches=2 task.loader_num_workers=0 task.evaluate_test=false model.warmup_ratio=0 model.controller_ramp_ratio=0 model.lambda_graph_start=0 device=cuda:0",
+      "evaluate_test": false,
+      "train_batches": 2,
+      "resolved_neighbor_fanouts": [5, 5],
+      "best_epoch": 1,
+      "validation_mrr": 0.16212082810662873,
+      "validation_hits_at_1": 0.0706,
+      "validation_hits_at_3": 0.1655,
+      "validation_hits_at_10": 0.3479,
+      "interpretation": "validation-only execution diagnostic; not a performance conclusion"
+    },
+    "movies_mlp_nc_regression": {
+      "result": "passed",
+      "command": "python -m src.main dataset=Movies task=nc model=mlp num_runs=1 task.epochs=1 task.eval_every=1 task.max_train_batches=2 task.evaluate_test=false device=cuda:0",
+      "evaluate_test": false,
+      "validation_accuracy": 0.36862626671791077,
+      "validation_macro_f1": 0.05925898770726044
+    },
+    "movies_sage_lp_regression": {
+      "result": "passed",
+      "command": "python -m src.main dataset=Movies task=lp model=sage num_runs=1 task.epochs=1 task.eval_every=1 task.max_train_batches=1 task.loader_num_workers=0 task.evaluate_test=false device=cuda:0",
+      "evaluate_test": false,
+      "train_batches": 1,
+      "resolved_neighbor_fanouts": [5, 5, 5],
+      "validation_mrr": 0.07284510811763023,
+      "validation_hits_at_1": 0.0167,
+      "validation_hits_at_3": 0.0517,
+      "validation_hits_at_10": 0.1767
+    }
+  },
+  "warnings": [
+    "PyTorch Geometric reports torch_geometric.distributed as deprecated; this warning originates from an installed dependency import."
+  ],
+  "spec_deviations": []
+}

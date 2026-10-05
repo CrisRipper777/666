@@ -13,8 +13,11 @@ from src.data import MAGData
 from src.models import build_model
 from src.tasks.common import (
     build_optimizer,
+    checkpoint_is_eligible,
     clone_state_dict,
+    compute_optional_supervised_aux_loss,
     load_state_dict_cpu,
+    restore_checkpoint_schedule,
     scheduler_step,
 )
 from src.tasks.inference import infer_all_embeddings, resolve_inference_mode
@@ -192,10 +195,17 @@ def _run_single_nc(
         if full_graph_training:
             if hasattr(model, "_batch_n_id"):
                 model._batch_n_id = None
-            z, _, _, aux_loss, _ = model(x_all, edge_index_all)
+            z, _, _, aux_loss, aux_info = model(x_all, edge_index_all)
             logits = classifier(z[train_idx_all])
             labels = y_all[train_idx_all]
-            loss = nn.functional.cross_entropy(logits, labels) + aux_weight * aux_loss
+            supervised_aux = compute_optional_supervised_aux_loss(
+                model,
+                task="nc",
+                aux_info=aux_info,
+                labels=labels,
+                node_index=train_idx_all,
+            )
+            loss = nn.functional.cross_entropy(logits, labels) + aux_weight * (aux_loss + supervised_aux)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(
                 list(model.parameters()) + list(classifier.parameters()),
@@ -211,9 +221,16 @@ def _run_single_nc(
             for batch_idx in train_loader:
                 batch_idx = batch_idx.to(device)
                 labels = y_all[batch_idx]
-                z, _, _, aux_loss, _ = model(x_all[batch_idx], None)
+                z, _, _, aux_loss, aux_info = model(x_all[batch_idx], None)
                 logits = classifier(z)
-                loss = nn.functional.cross_entropy(logits, labels) + aux_weight * aux_loss
+                supervised_aux = compute_optional_supervised_aux_loss(
+                    model,
+                    task="nc",
+                    aux_info=aux_info,
+                    labels=labels,
+                    node_index=torch.arange(batch_idx.numel(), device=batch_idx.device),
+                )
+                loss = nn.functional.cross_entropy(logits, labels) + aux_weight * (aux_loss + supervised_aux)
                 optimizer.zero_grad(set_to_none=True)
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(
@@ -251,9 +268,12 @@ def _run_single_nc(
             format_pct(val_metrics["macro_f1"]),
         )
 
-        improved = val_metrics["acc"] > best_val + min_delta
+        checkpoint_eligible = checkpoint_is_eligible(model, epoch)
+        improved = checkpoint_eligible and val_metrics["acc"] > best_val + min_delta
         stop_early = False
-        if improved:
+        if not checkpoint_eligible:
+            logger.info("Validation checkpoint selection deferred by model schedule at epoch %05d", epoch)
+        elif improved:
             best_val = val_metrics["acc"]
             best_epoch = epoch
             best_metrics = {
@@ -283,6 +303,7 @@ def _run_single_nc(
         raise RuntimeError("NC training finished without a validation-selected checkpoint")
     load_state_dict_cpu(model, best_model_state)
     load_state_dict_cpu(classifier, best_head_state)
+    restore_checkpoint_schedule(model, int(best_epoch))
 
     if bool(cfg.task.get("evaluate_test", True)):
         z = infer_all_embeddings(
