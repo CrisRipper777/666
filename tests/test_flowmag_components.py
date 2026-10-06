@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import torch
+import math
 
 from src.models.flowmag_components.adapters import AdaptedLinear
 from src.models.flowmag_components.attention import CrossModalAttention, SameModalRelation
@@ -151,3 +152,87 @@ def test_same_relation_masks_invalid_sources_and_missing_target_can_receive():
     assert cross_valid[2]
     assert null_mass[2] < 1
     assert correction[2].abs().sum() > 0
+
+
+def test_contrast_has_no_bias_and_zero_difference_stays_zero():
+    module = _layer()
+    assert module.contrast.base.bias is None
+    difference = torch.zeros(5, 8)
+    with torch.no_grad():
+        for parameter in module.contrast.parameters():
+            parameter.normal_()
+    output = module.contrast(difference, "text")
+    torch.testing.assert_close(output, torch.zeros_like(output), rtol=0, atol=0)
+
+
+def test_conditional_diagnostics_exclude_nodes_without_corresponding_sources():
+    torch.manual_seed(9)
+    module = _layer().eval()
+    h_text = torch.randn(4, 8)
+    h_image = torch.randn(4, 8)
+    text_valid = torch.tensor([True, False, False, False])
+    image_valid = torch.tensor([False, True, False, False])
+    edges = torch.tensor([[0, 1], [2, 3]])
+    _, _, diagnostics, _ = module(
+        h_text, h_image, text_valid, image_valid, edges, rho=1.0, tau=1.0
+    )
+    text_diag = diagnostics["text"]
+    assert text_diag["same_valid_rate"].item() == 0.25
+    assert text_diag["no_same_source_rate"].item() == 0.75
+    assert text_diag["cross_valid_rate"].item() == 0.25
+    assert text_diag["no_cross_source_rate"].item() == 0.75
+    assert text_diag["smooth_rms_given_valid"] > text_diag["smooth_rms"]
+    _, expected_null, _, _, _, _ = module.cross_attention(
+        module.pre_norm(h_text), module.pre_norm(h_image), edges, image_valid, "i2t",
+        return_attention_diagnostics=True,
+    )
+    torch.testing.assert_close(text_diag["null_mass_given_cross_valid"], expected_null[3])
+    assert text_diag["null_mass_given_cross_valid"] < expected_null.mean()
+
+
+def test_attention_entropy_averages_per_head_and_normalizes_over_real_plus_null():
+    module = CrossModalAttention(8, 2, 2, null_cardinality_correction=True).eval()
+    with torch.no_grad():
+        for parameter in module.parameters():
+            parameter.zero_()
+        module.query.base.weight.copy_(torch.eye(8))
+        module.null_key["t2i"][1].fill_(1.0)
+    target = torch.ones(3, 8)
+    source = torch.zeros(3, 8)
+    edges = torch.tensor([[0, 1, 2], [2, 2, 2]])
+    _, _, _, valid, entropy_by_target, normalized = module(
+        target, source, edges, torch.ones(3, dtype=torch.bool), "t2i",
+        return_attention_diagnostics=True,
+    )
+    p_real_head0 = torch.tensor(1.0 / 6.0)
+    p_null_head0 = torch.tensor(0.5)
+    denom_head1 = 3.0 + 3.0 * math.exp(2.0)
+    p_real_head1 = torch.tensor(1.0 / denom_head1)
+    p_null_head1 = torch.tensor(3.0 * math.exp(2.0) / denom_head1)
+    h0 = -(3 * p_real_head0 * p_real_head0.log() + p_null_head0 * p_null_head0.log())
+    h1 = -(3 * p_real_head1 * p_real_head1.log() + p_null_head1 * p_null_head1.log())
+    expected = (h0 + h1) / 2
+    assert valid.tolist() == [False, False, True]
+    torch.testing.assert_close(entropy_by_target[2], expected, rtol=1e-5, atol=1e-5)
+    assert torch.isfinite(normalized).all()
+    assert torch.all(normalized >= 0) and torch.all(normalized <= 1 + 1e-6)
+    torch.testing.assert_close(normalized[2], expected / math.log(4), rtol=1e-5, atol=1e-5)
+
+
+def test_update_ratios_use_input_and_middle_state_rms_denominators():
+    module = _layer().eval()
+    h_text = torch.randn(4, 8)
+    h_image = torch.randn(4, 8)
+    valid = torch.ones(4, dtype=torch.bool)
+    edges = torch.tensor([[0, 1, 2], [1, 2, 3]])
+    _, _, diagnostics, _ = module(
+        h_text, h_image, valid, valid, edges, rho=1.0, tau=1.0
+    )
+    d = diagnostics["text"]
+    eps = module.controller.eps
+    torch.testing.assert_close(
+        d["graph_update_ratio"], d["graph_update_rms"] / (d["state_input_rms"] + eps)
+    )
+    torch.testing.assert_close(
+        d["ffn_update_ratio"], d["ffn_update_rms"] / (d["middle_state_rms"] + eps)
+    )

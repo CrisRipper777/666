@@ -1,4 +1,5 @@
 name: flowmag
+collect_diagnostics: false
 
 # Independent topology-free stems and modality state width.
 hidden_dim: 256

@@ -20,6 +20,9 @@ max_train_batches: null
 
 save_ckpt_path: null
 run_metrics_path: null
+run_diagnostics_path: null
+collect_model_diagnostics: false
+profile_runtime: false
 scheduler: null
 scheduler_warmup_epochs: 10
 scheduler_min_lr: 1.0e-5

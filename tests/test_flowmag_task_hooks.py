@@ -7,10 +7,12 @@ from omegaconf import OmegaConf
 from src.models.flowmag import Model as FlowMAG
 from src.tasks.common import (
     checkpoint_is_eligible,
+    collect_optional_gradient_diagnostics,
     compute_optional_supervised_aux_loss,
     restore_checkpoint_schedule,
 )
 from src.tasks.lp import _resolve_lp_num_neighbors
+from src.tasks.nc import _diagnostics_path_for_run, _resolve_nc_eval_labels
 
 
 class _LegacyModel(torch.nn.Module):
@@ -33,6 +35,49 @@ def test_optional_hooks_leave_existing_models_eligible_with_zero_aux():
     assert aux.ndim == 0 and aux.item() == 0
     assert checkpoint_is_eligible(model, 1)
     restore_checkpoint_schedule(model, 1)  # legacy models have no schedule hook
+    assert collect_optional_gradient_diagnostics(model, True) is None
+
+
+def test_optional_gradient_hook_is_opt_in_and_accepts_model_mapping():
+    class _GradientModel(_LegacyModel):
+        def __init__(self):
+            super().__init__()
+            self.called = False
+
+        def gradient_diagnostics(self):
+            self.called = True
+            return {"weight": 3.0}
+
+    model = _GradientModel()
+    assert collect_optional_gradient_diagnostics(model, False) is None
+    assert not model.called
+    assert collect_optional_gradient_diagnostics(model, True) == {"weight": 3.0}
+    assert model.called
+
+
+def test_nc_label_resolution_can_avoid_test_split_entirely():
+    class _NoTestAccess:
+        y = torch.tensor([0, 1, 2, 99])
+        train_idx = torch.tensor([0, 1])
+        val_idx = torch.tensor([2])
+        num_classes = 3
+
+        @property
+        def test_idx(self):
+            raise AssertionError("test indices were accessed while evaluate_test=false")
+
+    assert _resolve_nc_eval_labels(_NoTestAccess(), include_test=False) == [0, 1, 2]
+
+
+def test_run_diagnostics_paths_are_distinct_across_runs(tmp_path):
+    cfg = OmegaConf.create({"num_runs": 3})
+    base = tmp_path / "dataset" / "epoch_diag.jsonl"
+    paths = [_diagnostics_path_for_run(base, cfg, run_id) for run_id in range(3)]
+    assert [path.name for path in paths] == [
+        "epoch_diag_run1.jsonl", "epoch_diag_run2.jsonl", "epoch_diag_run3.jsonl"
+    ]
+    assert len(set(paths)) == 3
+    assert all(path.parent.is_dir() for path in paths)
 
 
 def test_optional_supervised_hook_accepts_loss_mapping():

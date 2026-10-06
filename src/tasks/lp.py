@@ -23,6 +23,7 @@ from src.tasks.common import (
     build_optimizer,
     checkpoint_is_eligible,
     clone_state_dict,
+    collect_optional_gradient_diagnostics,
     compute_optional_supervised_aux_loss,
     load_state_dict_cpu,
     resolve_num_neighbors,
@@ -639,6 +640,9 @@ def _run_single_lp(
             loss = criterion(logits, labels) + aux_weight * (aux_loss + supervised_aux)
             _raise_if_nonfinite(loss, f"LP loss at epoch {epoch} batch {step}")
             loss.backward()
+            collect_optional_gradient_diagnostics(
+                model, bool(cfg.task.get("collect_model_diagnostics", False))
+            )
             clip_parameters = list(model.parameters()) + list(predictor.parameters())
             if projection is not None:
                 clip_parameters += list(projection.parameters())

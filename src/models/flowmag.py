@@ -117,6 +117,7 @@ class Model(nn.Module):
         self.lambda_graph_start = float(model_cfg.get("lambda_graph_start", 0.10))
         self.graph_aux_decay_end_ratio = float(model_cfg.get("graph_aux_decay_end_ratio", 0.40))
         self.lambda_router_z = float(model_cfg.get("lambda_router_z", 1e-3))
+        self.collect_diagnostics = bool(model_cfg.get("collect_diagnostics", False))
         if (
             not math.isfinite(self.lambda_prior)
             or not math.isfinite(self.lambda_graph_start)
@@ -265,7 +266,7 @@ class Model(nn.Module):
             raise ValueError("edge_index must have shape [2, num_edges]")
         u_text, u_image, text_valid, image_valid, _, _ = self._split_and_stem(x)
         h_text, h_image = u_text, u_image
-        diagnostics: dict[str, object] = {"layers": []}
+        diagnostics: dict[str, object] = {"layers": []} if self.collect_diagnostics else {}
         router_terms: list[tuple[torch.Tensor, torch.Tensor]] = []
         for layer in self.layers:
             h_text, h_image, layer_diag, layer_router_terms = layer(
@@ -276,8 +277,10 @@ class Model(nn.Module):
                 edge_index,
                 rho=self.rho,
                 tau=self.tau,
+                collect_diagnostics=self.collect_diagnostics,
             )
-            diagnostics["layers"].append(layer_diag)
+            if self.collect_diagnostics:
+                diagnostics["layers"].append(layer_diag)
             router_terms.extend(layer_router_terms)
 
         z, r_text, r_image, graph_block = self._compose_output(
@@ -296,11 +299,20 @@ class Model(nn.Module):
             "tau": float(self.tau),
             "lambda_graph": float(self.lambda_graph_current),
             "lambda_router_z_effective": float(self.lambda_router_z_effective),
-            "prior_text_norm": float(r_text.detach().float().norm(dim=-1).mean().cpu()),
-            "prior_image_norm": float(r_image.detach().float().norm(dim=-1).mean().cpu()),
-            "graph_block_norm": float(graph_block.detach().float().norm(dim=-1).mean().cpu()),
-            "router_z_raw": float(router_z.detach().float().cpu()),
         })
+        if self.collect_diagnostics:
+            top_metrics = torch.stack((
+                r_text.detach().float().norm(dim=-1).mean(),
+                r_image.detach().float().norm(dim=-1).mean(),
+                graph_block.detach().float().norm(dim=-1).mean(),
+                router_z.detach().float(),
+            )).cpu().tolist()
+            diagnostics.update({
+                "prior_text_norm": float(top_metrics[0]),
+                "prior_image_norm": float(top_metrics[1]),
+                "graph_block_norm": float(top_metrics[2]),
+                "router_z_raw": float(top_metrics[3]),
+            })
         if self.training:
             diagnostics["_supervised"] = {
                 "prior_text": r_text,
@@ -310,6 +322,44 @@ class Model(nn.Module):
                 "image_valid": image_valid,
             }
         return z, None, None, aux_loss, diagnostics
+
+    def gradient_diagnostics(self) -> dict[str, float | None]:
+        """Return per-component gradient L2 norms without changing gradients."""
+        groups: dict[str, list[nn.Parameter]] = {
+            "stem_text": list(self.stem_text.parameters()),
+            "stem_image": list(self.stem_image.parameters()),
+            "prior_text_projection": list(self.prior_text_projection.parameters()),
+            "prior_image_projection": list(self.prior_image_projection.parameters()),
+            "graph_fuse": list(self.graph_fuse.parameters()),
+        }
+        for layer_index, layer in enumerate(self.layers):
+            for group_name in (
+                "same_relation", "smooth", "contrast", "cross_attention",
+                "context", "controller", "ffn",
+            ):
+                groups[f"layers.{layer_index}.{group_name}"] = list(
+                    getattr(layer, group_name).parameters()
+                )
+
+        result: dict[str, float | None] = {}
+        active_names: list[str] = []
+        squared_norms: list[torch.Tensor] = []
+        for name, parameters in groups.items():
+            grad_sums = [
+                parameter.grad.detach().float().square().sum()
+                for parameter in parameters
+                if parameter.grad is not None
+            ]
+            if not grad_sums:
+                result[name] = None
+                continue
+            active_names.append(name)
+            squared_norms.append(torch.stack(grad_sums).sum())
+        if squared_norms:
+            norms_cpu = torch.stack(squared_norms).sqrt().detach().cpu().tolist()
+            for name, norm in zip(active_names, norms_cpu, strict=True):
+                result[name] = float(norm) if math.isfinite(float(norm)) else None
+        return result
 
     def compute_supervised_aux_loss(
         self,
@@ -413,6 +463,7 @@ class Model(nn.Module):
                     edge_local,
                     rho=self.rho,
                     tau=self.tau,
+                    collect_diagnostics=False,
                 )
                 seed_nodes = n_id[:size]
                 next_text[seed_nodes] = out_t[:size].cpu()

@@ -43,4 +43,7 @@ decoder:
   proj_dim: 128
 
 save_ckpt_path: null
+run_diagnostics_path: null
+collect_model_diagnostics: false
+profile_runtime: false
 evaluate_test: true

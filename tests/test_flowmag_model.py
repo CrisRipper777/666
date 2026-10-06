@@ -78,7 +78,7 @@ def test_final_prior_blocks_are_independent_of_graph_state():
 
 
 def test_schedule_phases_checkpoint_eligibility_and_router_z():
-    model = Model(_cfg(warmup_ratio=0.2, controller_ramp_ratio=0.4), _data_info())
+    model = Model(_cfg(warmup_ratio=0.2, controller_ramp_ratio=0.4, collect_diagnostics=True), _data_info())
     model.set_epoch(1)  # progress .01, phase A
     assert model.phase == "A" and model.rho == 0
     assert model.lambda_router_z_effective == 0
@@ -106,7 +106,7 @@ def test_schedule_phases_checkpoint_eligibility_and_router_z():
 
 
 def test_missing_modalities_stay_finite_and_can_receive_neighbor_updates():
-    model = Model(_cfg(warmup_ratio=0, controller_ramp_ratio=0), _data_info()).eval()
+    model = Model(_cfg(warmup_ratio=0, controller_ramp_ratio=0, collect_diagnostics=True), _data_info()).eval()
     x, _ = _toy_graph()
     x[0, :4] = 0.0  # missing text target
     x[0, 4:] = 0.0  # missing image target
@@ -202,3 +202,52 @@ def test_end_to_end_forward_backward_has_finite_gradients_in_major_components():
         grads = [p.grad for name, p in named.items() if name.startswith(prefix)]
         assert grads and any(grad is not None for grad in grads), prefix
         assert all(grad is None or torch.isfinite(grad).all() for grad in grads), prefix
+
+
+def test_diagnostics_toggle_preserves_embeddings_and_auxiliary_loss():
+    model_on = Model(_cfg(collect_diagnostics=True), _data_info()).eval()
+    model_off = Model(_cfg(collect_diagnostics=False), _data_info()).eval()
+    model_off.load_state_dict(model_on.state_dict())
+    x, edge_index = _toy_graph()
+    z_on, _, _, aux_on, info_on = model_on(x, edge_index)
+    z_off, _, _, aux_off, info_off = model_off(x, edge_index)
+    torch.testing.assert_close(z_on, z_off, rtol=0, atol=0)
+    torch.testing.assert_close(aux_on, aux_off, rtol=0, atol=0)
+    assert "layers" in info_on
+    assert "layers" not in info_off
+    assert set(info_off) == {"phase", "rho", "tau", "lambda_graph", "lambda_router_z_effective"}
+
+
+def test_diagnostics_off_does_not_call_tensor_cpu(monkeypatch):
+    model = Model(_cfg(collect_diagnostics=False), _data_info()).eval()
+    x, edge_index = _toy_graph()
+
+    def unexpected_cpu(*args, **kwargs):
+        raise AssertionError("diagnostics-off forward attempted a CPU scalar conversion")
+
+    monkeypatch.setattr(torch.Tensor, "cpu", unexpected_cpu)
+    z, _, _, aux_loss, _ = model(x, edge_index)
+    assert torch.isfinite(z).all() and torch.isfinite(aux_loss)
+
+
+def test_gradient_diagnostics_leave_raw_gradients_unchanged():
+    model = Model(_cfg(), _data_info()).train()
+    x, edge_index = _toy_graph()
+    z, _, _, aux_loss, _ = model(x, edge_index)
+    (z.square().mean() + aux_loss).backward()
+    before = {
+        name: parameter.grad.detach().clone()
+        for name, parameter in model.named_parameters()
+        if parameter.grad is not None
+    }
+    diagnostics = model.gradient_diagnostics()
+    after = {
+        name: parameter.grad.detach()
+        for name, parameter in model.named_parameters()
+        if parameter.grad is not None
+    }
+    assert "stem_text" in diagnostics and "layers.0.contrast" in diagnostics
+    assert diagnostics["stem_text"] is not None
+    assert before.keys() == after.keys()
+    for name in before:
+        torch.testing.assert_close(before[name], after[name], rtol=0, atol=0)

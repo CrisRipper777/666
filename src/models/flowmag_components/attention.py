@@ -92,7 +92,10 @@ class CrossModalAttention(nn.Module):
         edge_index: torch.Tensor,
         source_valid: torch.Tensor,
         direction: str,
-    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+        *,
+        collect_diagnostics: bool = True,
+        return_attention_diagnostics: bool = False,
+    ):
         if direction not in self.directions:
             raise ValueError(f"direction must be one of {self.directions}, got {direction!r}")
         num_nodes = target.size(0)
@@ -128,28 +131,47 @@ class CrossModalAttention(nn.Module):
             messages = alpha_real.unsqueeze(-1) * differences
             cross_raw = target.new_zeros((num_nodes, self.num_heads, self.head_dim))
             cross_raw.index_add_(0, real_dst, messages)
-            entropy_by_edge = -(
-                alpha_real.clamp_min(torch.finfo(alpha_real.dtype).tiny)
-                * alpha_real.clamp_min(torch.finfo(alpha_real.dtype).tiny).log()
-            ).sum(dim=-1)
-            entropy_by_node = target.new_zeros(num_nodes)
-            entropy_by_node.index_add_(0, real_dst, entropy_by_edge)
+            if collect_diagnostics:
+                safe_alpha_real = alpha_real.clamp_min(torch.finfo(alpha_real.dtype).tiny)
+                entropy_by_edge_head = -(safe_alpha_real * safe_alpha_real.log())
+                entropy_by_node_head = target.new_zeros((num_nodes, self.num_heads))
+                entropy_by_node_head.index_add_(0, real_dst, entropy_by_edge_head)
         else:
             alpha_null = torch.ones(
                 num_nodes, self.num_heads, dtype=target.dtype, device=target.device
             )
             cross_raw = target.new_zeros((num_nodes, self.num_heads, self.head_dim))
-            entropy_by_node = target.new_zeros(num_nodes)
+            if collect_diagnostics:
+                entropy_by_node_head = target.new_zeros((num_nodes, self.num_heads))
 
-        null_entropy = -(
-            alpha_null.clamp_min(torch.finfo(alpha_null.dtype).tiny)
-            * alpha_null.clamp_min(torch.finfo(alpha_null.dtype).tiny).log()
-        ).sum(dim=-1)
-        entropy = (entropy_by_node + null_entropy).mean()
+        if collect_diagnostics:
+            safe_alpha_null = alpha_null.clamp_min(torch.finfo(alpha_null.dtype).tiny)
+            null_entropy_by_head = -(safe_alpha_null * safe_alpha_null.log())
+            entropy_by_target = (entropy_by_node_head + null_entropy_by_head).mean(dim=-1)
+            positive_degree = degrees > 0
+            normalizer = torch.log((degrees + 1).to(entropy_by_target.dtype))
+            normalized = entropy_by_target / normalizer.clamp_min(torch.finfo(entropy_by_target.dtype).tiny)
+            normalized_entropy_by_target = torch.where(
+                positive_degree, normalized, torch.zeros_like(normalized)
+            )
+            entropy = entropy_by_target.mean()
+        else:
+            entropy = None
+            entropy_by_target = None
+            normalized_entropy_by_target = None
         null_mass = alpha_null.mean(dim=-1)
         cross_raw = cross_raw.reshape(num_nodes, self.hidden_dim)
         cross = self.output(cross_raw, direction)
         cross_valid = degrees > 0
         # Make the structural zero invariant explicit even under mixed precision.
         cross = torch.where(cross_valid.unsqueeze(-1), cross, torch.zeros_like(cross))
+        if return_attention_diagnostics:
+            return (
+                cross,
+                null_mass,
+                entropy,
+                cross_valid,
+                entropy_by_target,
+                normalized_entropy_by_target,
+            )
         return cross, null_mass, entropy, cross_valid

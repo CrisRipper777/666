@@ -1,0 +1,321 @@
+{
+  "study": "FlowMAG Full-Model NC Stability & Efficiency Study V1",
+  "branch": "research/flowmag-nc-stability-v1",
+  "base_sha": "77ab1f66260d318d25ea26643a19d7c02de4e819",
+  "datasets": [
+    "Movies",
+    "Toys",
+    "Grocery",
+    "Reddit-S",
+    "ele-fashion"
+  ],
+  "status_by_dataset": {
+    "Movies": {
+      "status": "healthy",
+      "reason": "three runs and required summaries completed; no joint graph-bypass trigger"
+    },
+    "Toys": {
+      "status": "healthy",
+      "reason": "three runs and required summaries completed; no joint graph-bypass trigger"
+    },
+    "Grocery": {
+      "status": "healthy",
+      "reason": "three runs and required summaries completed; no joint graph-bypass trigger"
+    },
+    "Reddit-S": {
+      "status": "healthy",
+      "reason": "three runs and required summaries completed; no joint graph-bypass trigger"
+    },
+    "ele-fashion": {
+      "status": "failed / incomplete",
+      "reason": "Seed 42 reached epoch 2, then the backward pass OOMed requesting 192 MiB with 193.69 MiB free; the initial 96 MiB diagnostic scratch OOM was reduced by chunked RMS, but training still exceeded the GPU limit. Seeds 43 and 44 were not attempted."
+    }
+  },
+  "runs_by_dataset": {
+    "Movies": {
+      "runs": {
+        "42": {
+          "status": "complete",
+          "best_epoch": 45,
+          "epochs_executed": 75,
+          "val_acc": 0.5272945165634155,
+          "val_macro_f1": 0.4306658264295365,
+          "model_parameters": 2529740
+        },
+        "43": {
+          "status": "complete",
+          "best_epoch": 48,
+          "epochs_executed": 78,
+          "val_acc": 0.526694655418396,
+          "val_macro_f1": 0.39034296271928653,
+          "model_parameters": 2529740
+        },
+        "44": {
+          "status": "complete",
+          "best_epoch": 53,
+          "epochs_executed": 83,
+          "val_acc": 0.526694655418396,
+          "val_macro_f1": 0.4162548248801466,
+          "model_parameters": 2529740
+        }
+      },
+      "completed_seeds": [
+        42,
+        43,
+        44
+      ],
+      "val_acc_mean": 0.5268946091334025,
+      "val_acc_std": 0.0002827772556090917,
+      "val_macro_f1_mean": 0.4124212046763232,
+      "val_macro_f1_std": 0.016683441238729703
+    },
+    "Toys": {
+      "runs": {
+        "42": {
+          "status": "complete",
+          "best_epoch": 54,
+          "epochs_executed": 84,
+          "val_acc": 0.7661271095275879,
+          "val_macro_f1": 0.7375660285811243,
+          "model_parameters": 2529222
+        },
+        "43": {
+          "status": "complete",
+          "best_epoch": 52,
+          "epochs_executed": 82,
+          "val_acc": 0.7757912278175354,
+          "val_macro_f1": 0.7476038242243059,
+          "model_parameters": 2529222
+        },
+        "44": {
+          "status": "complete",
+          "best_epoch": 48,
+          "epochs_executed": 78,
+          "val_acc": 0.7707175612449646,
+          "val_macro_f1": 0.7427860916417761,
+          "model_parameters": 2529222
+        }
+      },
+      "completed_seeds": [
+        42,
+        43,
+        44
+      ],
+      "val_acc_mean": 0.7708786328633627,
+      "val_acc_std": 0.003947003389088531,
+      "val_macro_f1_mean": 0.7426519814824021,
+      "val_macro_f1_std": 0.004099010001996787
+    },
+    "Grocery": {
+      "runs": {
+        "42": {
+          "status": "complete",
+          "best_epoch": 47,
+          "epochs_executed": 77,
+          "val_acc": 0.8014641404151917,
+          "val_macro_f1": 0.7229277405072688,
+          "model_parameters": 2529740
+        },
+        "43": {
+          "status": "complete",
+          "best_epoch": 45,
+          "epochs_executed": 75,
+          "val_acc": 0.8020497560501099,
+          "val_macro_f1": 0.71544933243614,
+          "model_parameters": 2529740
+        },
+        "44": {
+          "status": "complete",
+          "best_epoch": 48,
+          "epochs_executed": 78,
+          "val_acc": 0.799414336681366,
+          "val_macro_f1": 0.7208302837055015,
+          "model_parameters": 2529740
+        }
+      },
+      "completed_seeds": [
+        42,
+        43,
+        44
+      ],
+      "val_acc_mean": 0.8009760777155558,
+      "val_acc_std": 0.0011299005004481518,
+      "val_macro_f1_mean": 0.7197357855496368,
+      "val_macro_f1_std": 0.0031496128311772824
+    },
+    "Reddit-S": {
+      "runs": {
+        "42": {
+          "status": "complete",
+          "best_epoch": 56,
+          "epochs_executed": 86,
+          "val_acc": 0.9547027349472046,
+          "val_macro_f1": 0.9128265435747427,
+          "model_parameters": 2529740
+        },
+        "43": {
+          "status": "complete",
+          "best_epoch": 167,
+          "epochs_executed": 197,
+          "val_acc": 0.9556464552879333,
+          "val_macro_f1": 0.9142038513907724,
+          "model_parameters": 2529740
+        },
+        "44": {
+          "status": "complete",
+          "best_epoch": 121,
+          "epochs_executed": 151,
+          "val_acc": 0.9525007605552673,
+          "val_macro_f1": 0.901954442825156,
+          "model_parameters": 2529740
+        }
+      },
+      "completed_seeds": [
+        42,
+        43,
+        44
+      ],
+      "val_acc_mean": 0.9542833169301351,
+      "val_acc_std": 0.0013180243909130466,
+      "val_macro_f1_mean": 0.9096616125968904,
+      "val_macro_f1_std": 0.005478722090827143
+    },
+    "ele-fashion": {
+      "runs": {
+        "42": {
+          "status": "oom"
+        },
+        "43": {
+          "status": "not_run_after_oom"
+        },
+        "44": {
+          "status": "not_run_after_oom"
+        }
+      },
+      "completed_seeds": [],
+      "val_acc_mean": null,
+      "val_acc_std": null,
+      "val_macro_f1_mean": null,
+      "val_macro_f1_std": null
+    }
+  },
+  "optimization_model_seeds": [
+    42,
+    43,
+    44
+  ],
+  "probe_seed": 2026,
+  "data_split": "dataset-provided NC task split loaded once and shared by optimization/model seeds 42, 43, 44; MAGB split paths use seed 42, ele-fashion uses its supplied fixed split",
+  "train_validation_only": true,
+  "test_metrics_evaluated": false,
+  "test_metrics_reported": false,
+  "test_labels_used_for_analysis_or_selection": false,
+  "architecture_ablation": false,
+  "hyperparameter_search": false,
+  "formal_protocol": {
+    "task": "nc",
+    "model": "flowmag",
+    "training_mode": "full_graph",
+    "num_runs": 3,
+    "split_seed": 42,
+    "epochs": 300,
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "optimizer": "adamw",
+    "patience": 30,
+    "eval_every": 1,
+    "early_stop_min_epoch": 30,
+    "early_stop_min_delta": 0.0001,
+    "grad_clip": 1.0,
+    "scheduler": null,
+    "hidden_dim": 256,
+    "num_layers": 2,
+    "relation_dim": 64,
+    "router_dim": 64,
+    "adapter_rank": 16,
+    "cross_heads": 2,
+    "prior_dim_per_modality": 64,
+    "graph_block_dim": 128,
+    "ffn_multiplier": 2,
+    "dropout": 0.2,
+    "attention_dropout": 0.0,
+    "detach_candidate_descriptor": true,
+    "null_cardinality_correction": true,
+    "same_update_scale": 0.1,
+    "cross_update_scale": 0.1,
+    "warmup_ratio": 0.05,
+    "controller_ramp_ratio": 0.1,
+    "lambda_prior": 0.05,
+    "lambda_graph_start": 0.1,
+    "graph_aux_decay_end_ratio": 0.4,
+    "lambda_router_z": 0.001,
+    "collect_diagnostics": true,
+    "router_temp_start": 2.0,
+    "router_temp_end": 1.0,
+    "router_temp_anneal_end_ratio": 0.6,
+    "init_smooth_prob": 0.75,
+    "init_same_admission": 0.8,
+    "init_cross_admission": 0.2,
+    "eps": 1e-08,
+    "aux_weight": 1.0,
+    "inference_mode": "full",
+    "collect_model_diagnostics": true,
+    "profile_runtime": true,
+    "evaluate_test": false
+  },
+  "probe_protocol": {
+    "fit_indices": "train_idx",
+    "evaluation_indices": "val_idx",
+    "epochs_max": 100,
+    "patience": 15,
+    "optimizer": "Adam",
+    "lr": 0.01,
+    "checkpoint_selection": "FlowMAG best validation checkpoint; probe early stopping uses validation accuracy only"
+  },
+  "sage_efficiency_reference": [
+    {
+      "dataset": "Movies",
+      "model": "SAGE",
+      "status": "complete",
+      "seed": 42,
+      "epochs": 10,
+      "warmup_epochs": 3,
+      "measured_epochs": 7,
+      "hidden_dim": 256,
+      "num_layers": 3,
+      "parameters_including_classifier": 1055508,
+      "nodes": 16672,
+      "directed_edges": 160802,
+      "median_train_step_seconds": 0.01855785073712468,
+      "median_peak_allocated_mb": 1267.626953125,
+      "median_peak_reserved_mb": 2210.0,
+      "total_wall_clock_seconds": 1.3094330141320825,
+      "validation_evaluated": false,
+      "test_evaluated": false
+    },
+    {
+      "dataset": "ele-fashion",
+      "model": "SAGE",
+      "status": "complete",
+      "seed": 42,
+      "epochs": 10,
+      "warmup_epochs": 3,
+      "measured_epochs": 7,
+      "hidden_dim": 256,
+      "num_layers": 3,
+      "parameters_including_classifier": 791308,
+      "nodes": 97766,
+      "directed_edges": 399172,
+      "median_train_step_seconds": 0.050126228015869856,
+      "median_peak_allocated_mb": 2738.79833984375,
+      "median_peak_reserved_mb": 2924.0,
+      "total_wall_clock_seconds": 0.509037584066391,
+      "validation_evaluated": false,
+      "test_evaluated": false
+    }
+  ],
+  "warnings": [
+    "Seed 42 was unavailable after CUDA OOM: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 192.00 MiB. GPU 0 has a total capacity of 23.68 GiB of which 193.69 MiB is free. Including non-PyTorch memory, this process has 23.40 GiB memory in use. Of the allocated memory 22.76 GiB is allocated by PyTorch, and 348.50 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables) An earlier attempt also OOMed in diagnostic RMS; chunked RMS reduced scratch memory, after which epochs 1–2 completed before the backward-pass OOM. Earlier detail: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 96.00 MiB. GPU 0 has a total capacity of 23.68 GiB of which 63.69 MiB is free. Including non-PyTorch memory, this process has 23.53 GiB memory in use. Of the allocated memory 23.13 GiB is allocated by PyTorch, and 91.15 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)"
+  ],
+  "spec_deviations": []
+}

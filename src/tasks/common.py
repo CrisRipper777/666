@@ -47,6 +47,19 @@ def restore_checkpoint_schedule(model: torch.nn.Module, epoch: int) -> None:
         hook(int(epoch))
 
 
+def collect_optional_gradient_diagnostics(model: torch.nn.Module, enabled: bool):
+    """Call an opt-in model gradient hook before clipping, when available."""
+    if not enabled:
+        return None
+    hook = getattr(model, "gradient_diagnostics", None)
+    if not callable(hook):
+        return None
+    result = hook()
+    if not isinstance(result, dict):
+        raise TypeError("gradient_diagnostics must return a dict")
+    return result
+
+
 def build_optimizer(parameters, cfg, model=None) -> torch.optim.Optimizer:
     """Build a task optimizer while honoring an imported model preset."""
     name = str(cfg.task.get("optimizer", "adamw")).strip().lower()
